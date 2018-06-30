@@ -1,3 +1,4 @@
+require 'open-uri'
 require 'jekyll-torrent/version'
 
 # Creates a torrent file with your generated site. You should serve the files
