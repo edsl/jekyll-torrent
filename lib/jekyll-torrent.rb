@@ -1,16 +1,7 @@
 require 'jekyll-torrent/version'
 
 # Creates a torrent file with your generated site. You should serve the files
-# with your cliente.
-#
-# Default config values:
-#
-#     torrent:
-#       announce: 'udp://tracker.publicbt.com:80'
-#       file:     'site.torrent'
-#       flags:    '--verbose'
-#       bin:      'mktorrent'
-#
+# with your client.
 module Jekyll
   class Site
 
@@ -28,7 +19,8 @@ module Jekyll
       File.delete(file) if File.exists?(file)
 
       puts "Generating torrent file at #{file}"
-      puts `#{torrent['bin']} -a #{torrent['announce']} -o #{file} #{torrent['flags']} #{dest}`
+      # TODO usar popen3
+      puts `#{torrent[:bin]} --tracker "#{torrent[:announce]}" --outfile "#{file}" #{torrent[:flags]} "#{dest}"`
     end
 
     # Alias method chain
@@ -39,11 +31,11 @@ module Jekyll
       # Merges config with default values
       def torrent
         @torrent_config ||= {
-          'announce'  => 'udp://tracker.publicbt.com:80',
-          'file'      => 'site.torrent',
-          'flags'     => '--verbose',
-          'bin'       => 'mktorrent'
-        }.merge(config['torrent'] || {})
+          announce: 'udp://9.rarbg.to:2710/announce',
+          file: 'site.torrent',
+          flags: '',
+          bin: 'transmission-create'
+        }.merge(config.fetch('torrent', {}))
       end
   end
 end
