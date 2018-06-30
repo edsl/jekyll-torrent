@@ -14,8 +14,8 @@ module Jekyll
     def make_torrent
       # The torrent file is written at the root of the site
       file = "#{dest}/#{torrent['file']}"
-      tracker = [torrent[:announce]].flatten
-      tracker = random_tracker if tracker == 'random'
+      tracker = [torrent['announce']].flatten
+      tracker = random_tracker if tracker.include? 'random'
       trackers = tracker.join(' --tracker ')
 
       # Delete existing file since `mktorrent` doesn't overwrite it
@@ -23,7 +23,9 @@ module Jekyll
 
       puts "Generating torrent file at #{file}"
       # TODO usar popen3
-      puts `#{torrent[:bin]} --tracker #{trackers} --outfile "#{file}" #{torrent[:flags]} "#{dest}"`
+      command = "#{torrent['bin']} --tracker #{trackers} --outfile \"#{file}\" #{torrent['flags']} \"#{dest}\""
+      puts command
+      puts `#{command}`
     end
 
     def random_tracker
@@ -40,10 +42,10 @@ module Jekyll
       # Merges config with default values
       def torrent
         @torrent_config ||= {
-          announce: 'udp://9.rarbg.to:2710/announce',
-          file: 'site.torrent',
-          flags: '',
-          bin: 'transmission-create'
+          'announce' => 'udp://9.rarbg.to:2710/announce',
+          'file'     => 'site.torrent',
+          'flags'    => '',
+          'bin'      => 'transmission-create'
         }.merge(config.fetch('torrent', {}))
       end
   end
